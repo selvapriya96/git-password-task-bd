@@ -4,22 +4,21 @@ dotenv.config();
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const sendResetEmail = async (userEmail, resetLink) => {
+export const sendResetEmail = async (to, resetLink) => {
   try {
     await resend.emails.send({
-      from: "Password Reset <onboarding@resend.dev>", // Default sender
-      to: userEmail,
+      from: "Password Reset <onboarding@resend.dev>",
+      to,
       subject: "Reset your password",
       html: `
-        <h2>Password Reset</h2>
-        <p>You requested to reset your password.</p>
-        <p>Click the link below to set a new password:</p>
-        <a href="${resetLink}" target="_blank">${resetLink}</a>
-        <p><b>Note:</b> This link will expire in 15 minutes.</p>
-      `
+        <h3>Password Reset Request</h3>
+        <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
+        <p><a href="${resetLink}" target="_blank">${resetLink}</a></p>
+      `,
     });
-    console.log("✅ Email sent successfully to:", userEmail);
-  } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.log("✅ Reset email sent to", to);
+  } catch (err) {
+    console.error("❌ Error sending reset email:", err);
+    throw err;
   }
 };
